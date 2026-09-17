@@ -1,0 +1,41 @@
+# 环境与密钥
+.env
+.env.*
+!.env.example
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# 运行时产物
+output/
+.runtime/
+logs/
+__pycache__/
+*.pyc
+*.pyo
+
+# 重建即可的向量索引（python review.py build-kb）
+knowledge_base/data/
+
+# 抓取工具临时目录
+.tmp_flk/
+
+# 编辑器/系统
+.vscode/
+.idea/
+Thumbs.db
+
+# AI 工具目录
+.trae-html-share-packages/
+.zcode/
+.workbuddy/
+
+# 大体积实测产物（报告 md 单独入库）
+tests/r18_results/
+
+# 本地部署凭证与调试截图（不入库）
+deploy_pkg/frpc.toml
+_tmp_shots/
+
+# Word 临时锁文件
+~$*

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "contract_id": "defect_purchase",
+  "source_file_sha256": "2fa7a06d7190e3c1b44f207a468aac3ba066edeb71076c67606d1ed154c74bf4",
+  "input_text_sha256": "469f1fc5dec15e282b058925ed8dd178f3cfefa46d6f24ae5f29c2cbeda5cae8",
+  "our_side": "甲",
+  "we_pay": true,
+  "status": "draft",
+  "approved_by": null,
+  "approved_at": null,
+  "exhaustively_reviewed": false,
+  "labels": [
+    {"label_id":"dp_001", "disposition":"risk", "clause_ids":["c003"], "risk_type_tag":"amount_mismatch", "level":"高风险", "adverse_to":"双方", "fact":"大写十二万五千元与小写十一万八千元不一致", "legal_basis_ids":[], "notes":"待确认等级和建议"},
+    {"label_id":"dp_002", "disposition":"risk", "clause_ids":["c003"], "risk_type_tag":"invoice", "level":"中风险", "adverse_to":"甲", "fact":"发票类型、税率税额及开具时间没有明确", "legal_basis_ids":[], "notes":"待确认"},
+    {"label_id":"dp_003", "disposition":"risk", "clause_ids":["c005"], "risk_type_tag":"dingjin", "level":"中风险", "adverse_to":"甲", "fact":"使用订金名称但退还、抵扣及违约处理不明确", "legal_basis_ids":[], "notes":"订金不直接适用定金罚则"},
+    {"label_id":"dp_004", "disposition":"risk", "clause_ids":["c006", "c008"], "risk_type_tag":"acceptance_window", "level":"中风险", "adverse_to":"双方", "fact":"以甲方满意作为验收标准且没有客观期限和程序", "legal_basis_ids":[], "notes":"待确认"},
+    {"label_id":"dp_005", "disposition":"risk", "clause_ids":["c008"], "risk_type_tag":"delivery_time", "level":"中风险", "adverse_to":"甲", "fact":"只约定尽快发货，没有可计算的交付期限", "legal_basis_ids":[], "notes":"待确认"},
+    {"label_id":"dp_006", "disposition":"risk", "clause_ids":["c010"], "risk_type_tag":"penalty_rate", "level":"高风险", "adverse_to":"甲", "fact":"甲方逾期付款每日按未付款金额2%承担违约金", "legal_basis_ids":["legal_kb:civil_585"], "notes":"是否调减仍依实际损失和裁判判断"},
+    {"label_id":"dp_007", "disposition":"risk", "clause_ids":["c011"], "risk_type_tag":"liability_exclusion", "level":"高风险", "adverse_to":"甲", "fact":"乙方全面排除设备质量及故障损失赔偿责任", "legal_basis_ids":["legal_kb:pql_41"], "notes":"待核对产品质量法具体适用"},
+    {"label_id":"dp_008", "disposition":"risk", "clause_ids":["c012"], "risk_type_tag":"dispute_clause", "level":"高风险", "adverse_to":"双方", "fact":"同一条款并列约定仲裁和诉讼", "legal_basis_ids":[], "notes":"待确认仲裁约定效力"},
+    {"label_id":"dp_009", "disposition":"risk", "clause_ids":["c015"], "risk_type_tag":"undefined", "level":"中风险", "adverse_to":"双方", "fact":"约定口头协商与书面合同具有同等效力，取证和变更范围不清", "legal_basis_ids":[], "notes":"需要后续建立oral_modification标签"}
+  ]
+}

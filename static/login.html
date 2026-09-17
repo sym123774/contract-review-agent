@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · 合同智能审核系统</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f5f3ee; color: #1f2a3d; font-family: "Microsoft YaHei", sans-serif; }
+main { width: min(100%, 420px); padding: 36px; background: white; border: 1px solid #c9c4bb; border-top: 4px solid #8b1f1f; }
+.mark { display: grid; place-items: center; width: 44px; height: 44px; color: #8b1f1f; border: 2px solid currentColor; font: bold 26px SimSun, serif; }
+h1 { font: bold 24px SimSun, serif; margin: 22px 0 10px; }
+p { color: #4a5568; line-height: 1.7; font-size: 14px; }
+label { display: block; margin-top: 22px; font-size: 14px; }
+input { display: block; width: 100%; padding: 12px; border: 1px solid #c9c4bb; margin-top: 8px; font: inherit; }
+input:focus { outline: 2px solid #1a3a5c; outline-offset: 2px; }
+button { width: 100%; margin-top: 24px; padding: 12px; background: #1a3a5c; color: white; border: 0; font: inherit; cursor: pointer; }
+button:disabled { opacity: .65; cursor: wait; }
+#error { color: #8b1f1f; margin-bottom: 0; }
+.hint { margin: 24px 0 0; font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark" aria-hidden="true">审</div>
+  <h1>合同智能审核系统</h1>
+  <p>登录后上传合同、查看审核结果和检索法律依据。</p>
+  <form id="loginForm" method="post" action="/api/auth/login">
+    <label>用户名<input name="username" autocomplete="username" required maxlength="200" autofocus></label>
+    <label>密码<input name="password" type="password" autocomplete="current-password" required maxlength="1024"></label>
+    <p id="error" role="alert" hidden></p>
+    <button type="submit" id="submit">登录</button>
+  </form>
+  <p class="hint">请使用管理员配置的网页登录账号。忘记密码时，请联系管理员。</p>
+</main>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = document.getElementById('submit');
+  const error = document.getElementById('error');
+  button.disabled = true;
+  button.textContent = '登录中…';
+  error.hidden = true;
+  try {
+    const response = await fetch('/api/auth/login', {method:'POST', body:new FormData(event.currentTarget)});
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(typeof data.detail === 'string' ? data.detail : '登录失败，请检查输入后重试');
+    }
+    window.location.replace('/');
+  } catch (failure) {
+    error.textContent = failure.message || '连接失败，请稍后重试';
+    error.hidden = false;
+    button.disabled = false;
+    button.textContent = '登录';
+  }
+});
+</script>
+</body>
+</html>

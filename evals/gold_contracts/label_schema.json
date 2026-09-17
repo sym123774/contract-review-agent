@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "contract_id": "stable_identifier",
+  "source_file_sha256": "DOCX文件的64位小写SHA-256",
+  "input_text_sha256": "解析后正文的64位小写SHA-256",
+  "our_side": "甲、乙或null",
+  "we_pay": "true、false或null",
+  "status": "draft或approved",
+  "approved_by": "审核人标识；draft 时为 null",
+  "approved_at": "ISO日期；draft时为null",
+  "exhaustively_reviewed": false,
+  "labels": [
+    {
+      "label_id": "唯一编号",
+      "disposition": "risk或acceptable",
+      "clause_ids": ["c001"],
+      "risk_type_tag": "结构化风险标签",
+      "level": "高风险、中风险、低风险或提示",
+      "adverse_to": "甲、乙、双方或中立",
+      "fact": "只描述合同事实和风险方向",
+      "legal_basis_ids": ["legal_kb:civil_585"],
+      "notes": "复核说明"
+    }
+  ]
+}

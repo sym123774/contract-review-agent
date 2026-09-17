@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合同智能审核系统</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <div class="brand-mark">审</div>
+      <div>
+        <h1>合同智能审核系统</h1>
+        <p class="brand-sub">医疗器械行业 · 合同审查与法律知识检索 · 本地私有化部署</p>
+      </div>
+    </div>
+    <div class="sys-status" id="sysStatus">
+      <span class="dot dot-off" id="dotLlm"></span><span id="txtLlm">检测中</span>
+      <span class="sep"></span>
+      <span class="dot dot-off" id="dotKb"></span><span id="txtKb">知识库</span>
+    </div>
+  </div>
+  <nav class="nav">
+    <button class="nav-item active" data-tab="review">合同审核</button>
+    <button class="nav-item" data-tab="search">法律检索</button>
+    <button class="nav-item" data-tab="history">历史文档</button>
+    <form method="post" action="/api/auth/logout" style="margin-left:auto"><button class="nav-item" type="submit">退出登录</button></form>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- ============ 合同审核 ============ -->
+  <section id="tab-review" class="tab-panel active">
+    <div class="panel">
+      <div class="panel-head"><h2>上传合同</h2><p>支持 .docx 格式。完整分析会将合同文本发送到管理员配置的模型服务；规则审查不调用模型服务。</p></div>
+      <div class="upload-row">
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".docx" hidden>
+          <span class="dz-title" id="dzTitle">点击选择或拖入合同文件</span>
+          <span class="dz-sub">仅支持 .docx</span>
+        </label>
+        <div class="upload-opts">
+          <div class="opt-group">
+            <div class="opt-label">我方立场</div>
+            <div class="party-row">
+              <label class="radio"><input type="radio" name="party" value="甲">
+                <span><b>我方是甲方</b></span></label>
+              <label class="radio"><input type="radio" name="party" value="乙">
+                <span><b>我方是乙方</b></span></label>
+              <label class="radio"><input type="radio" name="party" value="" checked>
+                <span><b>不区分</b></span></label>
+            </div>
+            <div class="opt-label" style="margin-top:8px">我方付款方向</div>
+            <div class="party-row">
+              <label class="radio"><input type="radio" name="pay_side" value="pay">
+                <span><b>我方付款</b></span></label>
+              <label class="radio"><input type="radio" name="pay_side" value="receive">
+                <span><b>我方收款</b></span></label>
+              <label class="radio"><input type="radio" name="pay_side" value="" checked>
+                <span><b>不指定</b></span></label>
+            </div>
+            <small class="opt-hint" id="partyHint">立场与付款方向均按此处手动选择判定，系统不再从合同文本自动推定角色</small>
+          </div>
+          <div class="opt-group">
+            <label class="opt-label" for="modelSelect">审核模型</label>
+            <select id="modelSelect" class="select model-select">
+              <option value="">正在读取本机模型…</option>
+            </select>
+            <small class="opt-hint" id="modelHint">每份合同按这里选择的 Ollama 模型运行</small>
+          </div>
+          <div class="opt-group">
+            <label class="radio"><input type="radio" name="mode" value="full" checked>
+                <span><b>完整分析</b><br><small>分批检查全部可读条款，结论需人工复核</small></span></label>
+            <label class="radio"><input type="radio" name="mode" value="rules_only">
+                <span><b>规则审查</b><br><small>规则与本地知识检索，不调用模型服务</small></span></label>
+          </div>
+          <button class="btn btn-primary" id="btnStart" disabled>开始审核</button>
+          <button class="btn btn-ghost hidden" id="btnCancel">取消审核</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel hidden" id="progressPanel">
+      <div class="panel-head"><h2>审核进度</h2><p id="progressFile"></p></div>
+      <ul class="step-list" id="stepList"></ul>
+    </div>
+
+    <div class="hidden" id="resultWrap">
+      <div class="panel">
+        <div class="panel-head result-head">
+          <div>
+            <h2 id="resTitle">审核结果</h2>
+            <p id="resMeta"></p>
+          </div>
+          <div class="export-btns">
+            <button class="btn btn-ghost" data-polished-export onclick="exportReport('pdf')">导出 PDF</button>
+            <button class="btn btn-ghost" onclick="exportReport('json')">导出 JSON</button>
+            <button class="btn btn-ghost" data-polished-export onclick="exportReport('csv')">导出 CSV</button>
+          </div>
+        </div>
+        <div class="result-status-note" id="resultStatusNote"></div>
+        <div class="degraded-note hidden" id="degradedNote"></div>
+        <div class="stat-row" id="statRow"></div>
+        <div id="documentChecklist"></div>
+        <div class="subtabs">
+          <button class="subtab active" data-sub="risks">风险清单</button>
+          <button class="subtab" data-sub="evidence">引用依据</button>
+        </div>
+        <div id="sub-risks" class="subpanel">
+          <div id="risksBody"></div>
+        </div>
+        <div id="sub-evidence" class="subpanel hidden">
+          <div id="evidenceBody" class="evidence-list"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 法律检索 ============ -->
+  <section id="tab-search" class="tab-panel">
+    <div class="panel">
+      <div class="panel-head"><h2>法律知识检索</h2><p>默认列出当前启用的全部法规；输入关键词后按相关度检索。审核时会依据合同事实过滤专属条文。</p></div>
+      <p class="search-examples"><b>可以检索：</b>违约金是否过高、定金上限、付款期限、验收标准、保密义务、合同解除、争议解决、委托研发知识产权等。</p>
+      <div class="search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="输入关键词筛选；留空可查看全部法规条款">
+        <select id="domainSelect" class="select"></select>
+        <button class="btn btn-primary" id="btnSearch">检 索</button>
+      </div>
+      <div class="search-meta hidden" id="searchMeta"></div>
+    </div>
+    <div id="searchResults"></div>
+  </section>
+
+  <!-- ============ 历史文档 ============ -->
+  <section id="tab-history" class="tab-panel">
+    <div class="panel">
+      <div class="panel-head"><h2>历史审核文档</h2><p>审核结果保存于本地 output/reviews，服务重启不丢失</p></div>
+      <table class="history-table">
+        <thead><tr><th>文件</th><th>合同标题</th><th>类型</th><th>风险</th><th>时间</th><th>操作</th></tr></thead>
+        <tbody id="historyBody"><tr><td colspan="6" class="empty">加载中…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span>合同智能审核系统 · 本地部署版</span>
+  <span class="footer-sep">|</span>
+  <span>当前启用法规均附官方溯源；其余知识域草稿保留但未启用</span>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
